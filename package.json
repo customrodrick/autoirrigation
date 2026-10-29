@@ -1,6 +1,6 @@
 {
-  "name": "smartnyumba",
-  "version": "2.0.0",
+  "name": "autoirrigation",
+  "version": "0.1.0",
   "description": "",
   "main": "server.js",
   "scripts": {
@@ -23,5 +23,9 @@
   "devDependencies": {
     "nodemon": "^3.1.14",
     "vite": "^8.3.4"
+  },
+  "allowScripts": {
+    "@firebase/util@1.15.3": true,
+    "protobufjs@7.6.6": true
   }
 }
