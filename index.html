@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AutoIrrigation | Live Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-icon">💧</div><div><strong>SMART IRRIGATION SYSTEM</strong><small>Automatic irrigation</small></div></div>
+      <div class="nav-label">WORKSPACE</div>
+      <a class="nav-item active" href="#overview"><span>▦</span> Dashboard</a>
+      <div class="side-note"><div id="firebase-status-dot" class="pulse neutral"></div><div><b id="firebase-status-label">Firebase status</b><small id="firebase-status-detail">Connecting…</small></div></div>
+      <div class="sidebar-bottom"><div class="plant-icon">🌱</div><b>Grow smarter.</b><p>Tank filling and field irrigation monitoring in one place.</p></div>
+    </aside>
+
+    <main class="main" id="overview">
+      <header class="topbar">
+        <div><div class="eyebrow">OVERVIEW / DEVICE 01</div><h1>Farm dashboard</h1><p class="subheading">Monitor tank water, soil moisture, pump and irrigation valve in real time.</p></div>
+        <div class="top-right"><span id="live-status-pill" class="live-pill neutral"><i></i><span id="live-status-label">CONNECTING</span></span><div class="avatar">🌿</div></div>
+      </header>
+
+      <section class="welcome-card">
+        <div><span class="welcome-kicker">YOUR GARDEN AT A GLANCE</span><h2>Every drop counts.</h2><p>The pump fills the reservoir when water is low. The solenoid valve irrigates when the field soil is dry.</p></div>
+        <div class="welcome-art" aria-hidden="true"><span class="sun">☀</span><span class="cloud">☁</span><span class="hill hill-back"></span><span class="hill hill-front"></span><span class="sprout">🌱</span></div>
+      </section>
+
+      <section class="section-heading"><div><h2>Live readings</h2><p>Values come from <code>/AutoIrrigation/latest</code>.</p></div><span id="last-updated" class="updated">Waiting for first update…</span></section>
+
+      <section class="metrics-grid">
+        <article class="metric-card moisture-card">
+          <div class="metric-top"><div class="metric-icon moisture-icon">◉</div><span class="tiny-tag">SOIL SENSOR</span></div>
+          <div class="metric-label">Soil moisture</div>
+          <div class="metric-value"><span id="moisture-value">--</span><small>%</small></div>
+          <div class="progress-track"><div id="moisture-bar" class="progress-fill" style="width:0%"></div></div>
+          <div class="metric-foot"><span id="moisture-state">Waiting for sensor</span><span id="raw-value">Raw: --</span></div>
+        </article>
+
+        <article class="metric-card tank-card">
+          <div class="metric-top"><div class="metric-icon tank-icon">▤</div><span class="tiny-tag">RESERVOIR</span></div>
+          <div class="metric-label">Tank water level</div>
+          <div class="metric-value"><span id="tank-value">--</span><small>%</small></div>
+          <div class="progress-track"><div id="tank-bar" class="progress-fill tank-fill" style="width:0%"></div></div>
+          <div class="metric-foot"><span id="tank-state">Waiting for sensor</span><span id="tank-distance">Distance: --</span></div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-top"><div class="metric-icon pump-icon">ϟ</div><span class="tiny-tag">TANK FILLING</span></div>
+          <div class="metric-label">Source water pump</div>
+          <div class="status-line"><span id="pump-indicator" class="status-dot"></span><strong id="pump-value">--</strong></div>
+          <p class="card-description" id="pump-description">Waiting for pump status…</p>
+          <div class="card-bottom"><span class="status-caption">PUMP STATUS</span><span id="pump-chip" class="status-chip neutral">UNKNOWN</span></div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-top"><div class="metric-icon valve-icon">↻</div><span class="tiny-tag">FIELD IRRIGATION</span></div>
+          <div class="metric-label">Solenoid valve</div>
+          <div class="status-line"><span id="valve-indicator" class="status-dot"></span><strong id="valve-value">--</strong></div>
+          <p class="card-description" id="valve-description">Waiting for valve status…</p>
+          <div class="card-bottom"><span class="status-caption">VALVE STATUS</span><span id="valve-chip" class="status-chip neutral">UNKNOWN</span></div>
+        </article>
+      </section>
+
+      <section class="metrics-grid secondary-grid">
+        <article class="metric-card">
+          <div class="metric-top"><div class="metric-icon green-icon">●</div><span class="tiny-tag">INDICATOR 01</span></div>
+          <div class="metric-label">Green LED</div>
+          <div class="status-line"><span id="green-indicator" class="status-dot"></span><strong id="green-value">--</strong></div>
+          <p class="card-description">LED output reported by the ESP32.</p>
+          <div class="card-bottom"><span class="status-caption">LED OUTPUT</span><span id="green-chip" class="status-chip neutral">UNKNOWN</span></div>
+        </article>
+        <article class="metric-card">
+          <div class="metric-top"><div class="metric-icon orange-icon">●</div><span class="tiny-tag">INDICATOR 02</span></div>
+          <div class="metric-label">Orange LED</div>
+          <div class="status-line"><span id="orange-indicator" class="status-dot"></span><strong id="orange-value">--</strong></div>
+          <p class="card-description">LED output reported by the ESP32.</p>
+          <div class="card-bottom"><span class="status-caption">LED OUTPUT</span><span id="orange-chip" class="status-chip neutral">UNKNOWN</span></div>
+        </article>
+        <article class="metric-card system-state-card">
+          <div class="metric-top"><div class="metric-icon system-icon">!</div><span class="tiny-tag">DIAGNOSTICS</span></div>
+          <div class="metric-label">System status</div>
+          <div class="status-line"><span id="system-indicator" class="status-dot"></span><strong id="system-value">--</strong></div>
+          <p class="card-description" id="system-description">Waiting for diagnostic status…</p>
+          <div class="card-bottom"><span class="status-caption">SENSOR CHECK</span><span id="system-chip" class="status-chip neutral">UNKNOWN</span></div>
+        </article>
+        <article class="metric-card">
+          <div class="metric-top"><div class="metric-icon wifi-icon">⌁</div><span class="tiny-tag">NETWORK</span></div>
+          <div class="metric-label">ESP32 Wi-Fi status</div>
+          <div class="status-line"><span id="wifi-indicator" class="status-dot"></span><strong id="wifi-value">--</strong></div>
+          <p class="card-description" id="wifi-description">Reported by the ESP32.</p>
+          <div class="card-bottom"><span class="status-caption">DEVICE NETWORK</span><span id="wifi-chip" class="status-chip neutral">UNKNOWN</span></div>
+        </article>
+      </section>
+
+      <section class="lower-grid">
+        <article class="panel chart-panel">
+          <div class="panel-heading"><div><h2>Moisture history</h2><p>Recent readings received by this browser</p></div><span class="chart-key"><i></i> Moisture (%)</span></div>
+          <div class="chart-wrap"><canvas id="moisture-chart"></canvas></div>
+        </article>
+        <article class="panel system-panel">
+          <div class="panel-heading"><div><h2>System connection</h2><p>Firebase Realtime Database</p></div><span id="connection-chip" class="status-chip neutral">CONNECTING</span></div>
+          <div class="connection-row"><span class="connection-symbol">⌁</span><div><b>Database listener</b><small id="connection-text">Connecting to your database…</small></div></div>
+          <div class="connection-row"><span class="connection-symbol">▣</span><div><b>ESP32 device</b><small id="device-status-text">Waiting for the first device reading…</small></div></div>
+          <div class="connection-row"><span class="connection-symbol">▤</span><div><b>Tank sensor</b><small id="tank-sensor-text">Waiting for tank sensor status…</small></div></div>
+          <div class="connection-row"><span class="connection-symbol">◉</span><div><b>Soil sensor</b><small id="soil-sensor-text">Waiting for soil sensor status…</small></div></div>
+          <div class="connection-row"><span class="connection-symbol">◷</span><div><b>Last database update received</b><small id="connection-time">Not received yet</small></div></div>
+          <div class="notice"><b>Sensor fault handling</b><p id="fault-notice">Invalid sensor values are shown as faults, not as zero. The ESP32 should control actuators safely when a sensor fails.</p></div>
+        </article>
+      </section>
+      <footer>AutoIrrigation <span>•</span> ESP32 + Firebase Realtime Database</footer>
+    </main>
+  </div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
